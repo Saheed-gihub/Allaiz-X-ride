@@ -82,3 +82,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+  .bg-stars {
+    background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+  }
+  .bg-twinkling{
+    background-image: url('https://www.transparenttextures.com/patterns/gplay.png');
+    animation: move-twink-back 200s linear infinite;
+  }
+}
