@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useAuth, useUser } from "@/firebase";
-import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
+import { initiateEmailSignUp } from "@/firebase/non-blocking-login";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Loader2 } from "lucide-react";
@@ -88,7 +88,7 @@ export default function RegisterPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     setError(null);
     setFormIsSubmitting(true);
-    initiateAnonymousSignIn(auth);
+    initiateEmailSignUp(auth, values.email, values.password);
   }
 
   if (isUserLoading || user) {
