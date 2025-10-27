@@ -1,0 +1,63 @@
+/**
+ * @fileoverview Firestore Security Rules for Alliaz X-ride application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles.
+ * Only the authenticated user can read or write their own profile data.
+ *
+ * Data Structure:
+ * User profiles are stored under the `/users/{userId}` collection, where `{userId}`
+ * corresponds to the Firebase Auth UID.
+ *
+ * Key Security Decisions:
+ * - User listing is allowed only for the owner.
+ * - Authorization decisions are based solely on the `request.auth.uid` and the
+ *   `userId` path parameter, achieving authorization independence.
+ * - Data validation is minimal, focusing on relational integrity (matching user ID).
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Enforces user-ownership for user profiles. Only the authenticated user
+     *              can create, read, update, or delete their own profile.
+     * @path /users/{userId}
+     * @allow (create) User with UID 'user_abc' can create a profile at /users/user_abc.
+     * @allow (get) User with UID 'user_abc' can get their profile at /users/user_abc.
+     * @allow (update) User with UID 'user_abc' can update their profile at /users/user_abc.
+     * @allow (delete) User with UID 'user_abc' can delete their profile at /users/user_abc.
+     * @deny (create) User with UID 'user_xyz' cannot create a profile at /users/user_abc.
+     * @deny (get) User with UID 'user_xyz' cannot get the profile at /users/user_abc.
+     * @deny (update) User with UID 'user_xyz' cannot update the profile at /users/user_abc.
+     * @deny (delete) User with UID 'user_xyz' cannot delete the profile at /users/user_abc.
+     * @principle Enforces document ownership for all operations in user profiles.
+     */
+    match /users/{userId} {
+      // Helper function to check if the authenticated user is the owner of the document.
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      // Helper function to check if the authenticated user is the existing owner of the document.
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      // Allow users to read their own profile.
+      allow get: if isOwner(userId);
+
+      // Allow users to list their own profiles.
+      allow list: if isOwner(userId);
+
+      // Allow users to create their own profile, enforcing that the ID matches the authenticated user's UID.
+      allow create: if isOwner(userId) && request.resource.data.id == request.auth.uid;
+
+      // Allow users to update their own profile, enforcing that the ID matches the authenticated user's UID and does not change.
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+
+      // Allow users to delete their own profile.
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

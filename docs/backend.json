@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user profile within the Alliaz X-ride application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user profile."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The user's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The user's last name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "dateJoined": {
+          "type": "string",
+          "description": "The date and time the user joined the application.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "phoneNumber",
+        "dateJoined"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profiles. The 'userId' path parameter corresponds to the Firebase Auth UID. Includes denormalized 'userId' in the path for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support user authentication and profile management for the Alliaz X-ride application. It prioritizes authorization independence by using path-based ownership for user profiles, eliminating the need for `get()` calls in security rules. The structure segregates user profiles into a dedicated collection under `/users/{userId}`, ensuring a homogeneous security posture. This design facilitates simple and robust security rules and supports secure `list` operations.\n\nThe `/users/{userId}` collection is designed to store user profiles, ensuring that each document has the same security requirements. The user ID is directly embedded in the document path. This approach allows for secure `list` operations, as rules can be written to only allow a user to access their own profile. Authorization Independence is achieved because the rules only need to check the `request.auth.uid` against the `userId` parameter in the path, without needing to read any data from other documents."
+  }
+}
