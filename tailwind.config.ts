@@ -88,10 +88,17 @@ export default {
             height: '0',
           },
         },
+        'ride': {
+          '0%': { transform: 'translateX(0) rotate(0deg)' },
+          '50%': { transform: 'translateX(calc(100vw + 150px)) rotate(10deg)' },
+          '51%': { transform: 'translateX(calc(100vw + 150px)) rotateY(180deg) rotate(10deg)' },
+          '100%': { transform: 'translateX(0) rotateY(180deg) rotate(0deg)'},
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'ride': 'ride 10s linear infinite',
       },
     },
   },

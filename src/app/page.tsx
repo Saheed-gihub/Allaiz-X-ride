@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase';
+import { Car } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 export default function SplashPage() {
@@ -27,6 +28,11 @@ export default function SplashPage() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-700 to-violet-900">
+      <div className="absolute top-1/2 left-0 w-full h-1/2">
+        <Car className="absolute text-white/10 -translate-y-1/2 w-48 h-48 animate-ride" style={{left: '-150px'}} />
+        <Car className="absolute text-white/10 -translate-y-1/2 w-32 h-32 animate-ride" style={{right: '-150px', animationDelay: '2s', animationDuration: '8s'}} />
+        <Car className="absolute text-white/5 -translate-y-1/2 w-24 h-24 animate-ride" style={{left: '-100px', animationDelay: '5s', animationDuration: '12s'}}/>
+      </div>
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
         <div className="bg-black/20 backdrop-blur-md p-8 rounded-xl shadow-2xl">
           <h1 className="text-5xl font-headline font-bold text-white">Alliaz X-ride</h1>
